@@ -2,6 +2,7 @@
 
 TIMEOUT=15
 QUIET=0
+VERBOSE=0
 
 echoerr() {
   if [ "$QUIET" -ne 1 ]; then printf "%s\n" "$*" 1>&2; fi
@@ -14,6 +15,7 @@ Usage:
   $cmdname host:port [-t timeout] [-- command args]
   -q | --quiet                        Do not output any status messages
   -t TIMEOUT | --timeout=timeout      Timeout in seconds, zero for no timeout
+  -v | --verbose                      Print extra info
   -- COMMAND ARGS                     Execute command with args after the test finishes
 USAGE
   exit "$exitcode"
@@ -27,10 +29,14 @@ wait_for() {
       HOST=$(printf "%s\n" "$link"| cut -d : -f 1)
       PORT=$(printf "%s\n" "$link"| cut -d : -f 2)
       
-      echo "Checking $HOST:$PORT..."
+      if [ $VERBOSE -eq 1 ]; then 
+        echo "Checking $HOST:$PORT..."
+      fi
       nc -z "$HOST" "$PORT" > /dev/null 2>&1
       result=$(expr $result + $?)
-      echo "result=$result"
+      if [ $VERBOSE -eq 1 ]; then
+        echo "result=$result"
+      fi
     done
 
     if [ $result -eq 0 ] ; then
@@ -58,6 +64,10 @@ do
     ;;
     -q | --quiet)
     QUIET=1
+    shift 1
+    ;;
+    -v | --verbose)
+    VERBOSE=1
     shift 1
     ;;
     -t)
