@@ -2,7 +2,8 @@
 
 ### modified by ch.linghu
 
-make this script to handle multiple dependencies.
+支持多个依赖的检查。
+注意：修改之后的版本只支持bash
 
 
 `./wait-for` is a script designed to synchronize services like docker containers. It is [sh](https://en.wikipedia.org/wiki/Bourne_shell) and [alpine](https://alpinelinux.org/) compatible. It was inspired by [vishnubob/wait-for-it](https://github.com/vishnubob/wait-for-it), but the core has been rewritten at [Eficode](http://eficode.com/) by [dsuni](https://github.com/dsuni) and [mrako](https://github.com/mrako).

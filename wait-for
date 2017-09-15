@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 TIMEOUT=15
 QUIET=0
@@ -21,10 +21,18 @@ USAGE
 
 wait_for() {
   command="$*"
+  result=0
   for i in `seq $TIMEOUT` ; do
-    nc -z "$HOST" "$PORT" > /dev/null 2>&1
-    
-    result=$?
+    for link in ${DEPENDS[@]} ; do
+      HOST=$(printf "%s\n" "$link"| cut -d : -f 1)
+      PORT=$(printf "%s\n" "$link"| cut -d : -f 2)
+      
+      echo "Checking $HOST:$PORT..."
+      nc -z "$HOST" "$PORT" > /dev/null 2>&1
+      result=$(expr $result + $?)
+      echo "result=$result"
+    done
+
     if [ $result -eq 0 ] ; then
       if [ -n "$command" ] ; then
         exec $command
@@ -37,12 +45,15 @@ wait_for() {
   exit 1
 }
 
+DEPENDS=()
+
 while [ $# -gt 0 ]
 do
   case "$1" in
     *:* )
-    HOST=$(printf "%s\n" "$1"| cut -d : -f 1)
-    PORT=$(printf "%s\n" "$1"| cut -d : -f 2)
+    DEPENDS+=($1)
+    # HOST=$(printf "%s\n" "$1"| cut -d : -f 1)
+    # PORT=$(printf "%s\n" "$1"| cut -d : -f 2)
     shift 1
     ;;
     -q | --quiet)
@@ -72,9 +83,11 @@ do
   esac
 done
 
-if [ "$HOST" = "" -o "$PORT" = "" ]; then
+if [ ${#DEPENDS[@]} -eq 0 ]; then
   echoerr "Error: you need to provide a host and port to test."
   usage 2
 fi
+
+echo DEPENDS=${DEPENDS[@]}
 
 wait_for "$@"
