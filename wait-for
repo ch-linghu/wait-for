@@ -21,8 +21,8 @@ USAGE
 
 wait_for() {
   command="$*"
-  result=0
   for i in `seq $TIMEOUT` ; do
+    result=0
     for link in ${DEPENDS[@]} ; do
       HOST=$(printf "%s\n" "$link"| cut -d : -f 1)
       PORT=$(printf "%s\n" "$link"| cut -d : -f 2)
