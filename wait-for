@@ -58,8 +58,6 @@ do
   case "$1" in
     *:* )
     DEPENDS+=($1)
-    # HOST=$(printf "%s\n" "$1"| cut -d : -f 1)
-    # PORT=$(printf "%s\n" "$1"| cut -d : -f 2)
     shift 1
     ;;
     -q | --quiet)
